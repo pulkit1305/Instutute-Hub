@@ -4,6 +4,8 @@
  */
 package com.mycompany.connectmysql;
 
+import com.mycompany.connectmysql.UserDashboard;
+import com.mysql.cj.Session;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -136,7 +138,7 @@ public class LoginForm extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-     public void validating() {
+    public void validating() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             con = DriverManager.getConnection("jdbc:mysql://localhost:3306/pulkit?zeroDateTimeBehavior=CONVERT_TO_NULL", "springstudent", "springstudent");
@@ -157,8 +159,8 @@ public class LoginForm extends javax.swing.JFrame {
                 resultSet = preparedStatement.executeQuery();
                 if (resultSet.next()) {
                     JOptionPane.showMessageDialog(null, "Login As Admin Sucessfull", "Insert MSG", JOptionPane.INFORMATION_MESSAGE);
-                     AdminDashboard AdminDashboard = new AdminDashboard();
-        AdminDashboard.setVisible(true);
+                    AdminDashboard AdminDashboard = new AdminDashboard();
+                    AdminDashboard.setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(null, "Invalid Credentials", "Insert MSG", JOptionPane.INFORMATION_MESSAGE);
                 }
@@ -167,7 +169,7 @@ public class LoginForm extends javax.swing.JFrame {
                 System.out.println(e);
             }
         } else if (user.isSelected()) {
-            
+
             try {
 
                 s1 = "SELECT * FROM users WHERE username=? AND password=?";
@@ -175,12 +177,14 @@ public class LoginForm extends javax.swing.JFrame {
                 preparedStatement.setString(1, enteredUsername);
                 preparedStatement.setString(2, enteredPassword);
                 resultSet = preparedStatement.executeQuery();
-                
+
                 if (resultSet.next()) {
                     JOptionPane.showMessageDialog(null, "Login as User Sucessfull", "Insert MSG", JOptionPane.INFORMATION_MESSAGE);
-                     
-        this.dispose();
-                 
+                    dispose();
+                    new UserDashboard(enteredUsername).setVisible(true);
+
+                    this.dispose();
+
                 } else {
                     JOptionPane.showMessageDialog(null, "Invalid Credentials", "Insert MSG", JOptionPane.INFORMATION_MESSAGE);
                 }
@@ -197,13 +201,16 @@ public class LoginForm extends javax.swing.JFrame {
         enteredUsername = jTextField1.getText();
         enteredPassword = jTextField2.getText();
         validating();
+
+//        Session.loggedInUsername=jTextField1.getText();
+
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
-         MainPage window2=new MainPage();
-          window2.setVisible(true);
-           this.dispose();
+        MainPage window2 = new MainPage();
+        window2.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
@@ -241,7 +248,7 @@ public class LoginForm extends javax.swing.JFrame {
         });
     }
 
-   
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JRadioButton admin;
     private javax.swing.ButtonGroup buttonGroup1;
