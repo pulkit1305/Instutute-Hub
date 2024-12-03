@@ -36,7 +36,7 @@ public class AdminDashboard extends javax.swing.JFrame {
 
         jLabel1.setText("Welcome to Admin Dashboard");
 
-        jButton1.setText("Manage User");
+        jButton1.setText("Admissions List");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -79,7 +79,7 @@ public class AdminDashboard extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(15, 15, 15)
                         .addComponent(jButton4)))
-                .addContainerGap(71, Short.MAX_VALUE))
+                .addContainerGap(60, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -102,6 +102,9 @@ public class AdminDashboard extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
+         AdmissionsList window2=new AdmissionsList();
+          window2.setVisible(true);
+          
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed

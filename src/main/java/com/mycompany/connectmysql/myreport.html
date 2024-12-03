@@ -1,9 +1,273 @@
-<html>
-    <head>
-        <title>Report</title>
-    </head>
-    <body>
-        <h1>hi</h1>
+package com.mycompany.connectmysql;
+
+import java.awt.BorderLayout;
+import java.sql.*;
+import java.util.Vector;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+
+/**
+ *
+ * @author PULKIT SHARMA
+ */
+public class AdmissionsList extends javax.swing.JFrame {
+
+    private JTable admissionTable;
+    private DefaultTableModel tableModel;
+    private JScrollPane scrollPane;
+    private Connection con;
+
+    /**
+     * Creates new form AdmissionsList
+     */
+    public AdmissionsList() {
+        setTitle("Admitted Students List");
+        setSize(800, 400);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        initializeUI();
+        connectToDatabase();
+        fetchAdmissionData();
+    }
+
+    private void initializeUI() {
+        // Table model and JTable setup
+        tableModel = new DefaultTableModel();
+        tableModel.addColumn("Student ID");
+        tableModel.addColumn("Name");
+        tableModel.addColumn("Email");
+        tableModel.addColumn("Course Name");
+        tableModel.addColumn("Fees Paid");
+        tableModel.addColumn("Amount Paid");
+        tableModel.addColumn("Remaining Fees");
+
+        // Set table model for the JTable
+        admissionTable = new JTable(tableModel) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                // Allow editing only for "Amount Paid" column (index 5)
+                return column == 5;
+            }
+        };
         
-    </body>
-</html>
+        // Add a listener to detect changes in the table
+        admissionTable.getModel().addTableModelListener(e -> {
+            if (e.getColumn() == 5) { // Check if the edited column is "Amount Paid"
+                int row = e.getFirstRow();
+                int studentId = (int) admissionTable.getValueAt(row, 0);
+                int newAmountPaid = (int) admissionTable.getValueAt(row, 5);
+                updateFeesPaid(studentId, newAmountPaid);
+            }
+        });
+
+        // Add the table to a scroll pane
+        scrollPane = new JScrollPane(admissionTable);
+        add(scrollPane, BorderLayout.CENTER);
+    }
+
+    // Connect to the database
+    private void connectToDatabase() {
+        try {
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/pulkit?zeroDateTimeBehavior=CONVERT_TO_NULL", "springstudent", "springstudent");
+            System.out.println("Connected to the database.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Fetch admission data from the database
+    private void fetchAdmissionData() {
+        String query = "SELECT u.user_id, u.name, u.email, c.name AS course_name, " +
+                       "c.fees, a.amount_paid, (c.fees - a.amount_paid) AS remaining_fees " +
+                       "FROM users u " +
+                       "JOIN admissions a ON u.user_id = a.user_id " +
+                       "JOIN courses c ON a.course_id = c.id";
+
+        try (Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+            // Clear previous data in the table
+            tableModel.setRowCount(0);
+
+            // Add new data to the table
+            while (rs.next()) {
+                Vector<Object> row = new Vector<>();
+                row.add(rs.getInt("user_id"));
+                row.add(rs.getString("name"));
+                row.add(rs.getString("email"));
+                row.add(rs.getString("course_name"));
+                row.add(rs.getBoolean("amount_paid") ? "Yes" : "No");
+                row.add(rs.getInt("amount_paid"));
+                row.add(rs.getInt("remaining_fees"));
+                tableModel.addRow(row);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Update the amount paid in the database
+    private void updateFeesPaid(int studentId, int newAmountPaid) {
+        String updateQuery = "UPDATE admissions SET amount_paid = ? WHERE user_id = ?";
+        try (PreparedStatement pst = con.prepareStatement(updateQuery)) {
+            pst.setInt(1, newAmountPaid);
+            pst.setInt(2, studentId);
+            pst.executeUpdate();
+            JOptionPane.showMessageDialog(this, "Fees updated successfully.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error updating fees.");
+        }
+    }
+
+    // Refresh data (useful for after an admission is added/updated)
+    public void refreshData() {
+        fetchAdmissionData();
+    }
+
+    // Main method to run the JFrame
+    public static void main(String args[]) {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new AdmissionsList().setVisible(true);
+            }
+        });
+    }
+}
+
+.//////////////////////////////
+
+
+
+package com.mycompany.connectmysql;
+
+import java.awt.BorderLayout;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Vector;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+
+public class AdmissionsList extends javax.swing.JFrame {
+
+    private JTable admissionTable;
+    private DefaultTableModel tableModel;
+    private JScrollPane scrollPane;
+    private Connection con;
+
+    public AdmissionsList() {
+        setTitle("Admitted Students List");
+        setSize(800, 400);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        initializeUI();
+        connectToDatabase();
+        fetchAdmissionData();
+    }
+
+    private void initializeUI() {
+        tableModel = new DefaultTableModel();
+        tableModel.addColumn("Student ID");
+        tableModel.addColumn("Name");
+        tableModel.addColumn("Email");
+        tableModel.addColumn("Course Name");
+        tableModel.addColumn("Total Fees");
+        tableModel.addColumn("Amount Paid");
+        tableModel.addColumn("Remaining Fees");
+
+        admissionTable = new JTable(tableModel) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 5; // Allow editing only for the "Amount Paid" column
+            }
+        };
+
+        // Table Model Listener for dynamically updating remaining fees and the database
+        admissionTable.getModel().addTableModelListener(e -> {
+            if (e.getColumn() == 5) {  // Check if "Amount Paid" column is edited (column index 5)
+                int row = e.getFirstRow();
+                int studentId = (int) admissionTable.getValueAt(row, 0);
+                int newAmountPaid = 0;
+
+                try {
+                    // Get new "Amount Paid" value
+                    newAmountPaid = Integer.parseInt(admissionTable.getValueAt(row, 5).toString());
+                    int totalFees = (int) admissionTable.getValueAt(row, 4); // Get the total fees
+                    int remainingFees = totalFees - newAmountPaid; // Calculate remaining fees
+                    admissionTable.setValueAt(remainingFees, row, 6); // Update "Remaining Fees" column
+
+                    // Update the database with new "Amount Paid"
+                    updateFeesPaid(studentId, newAmountPaid);
+
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(this, "Invalid amount. Please enter a valid number.");
+                }
+            }
+        });
+
+        scrollPane = new JScrollPane(admissionTable);
+        add(scrollPane, BorderLayout.CENTER);
+    }
+
+    private void connectToDatabase() {
+        try {
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/pulkit?zeroDateTimeBehavior=CONVERT_TO_NULL", "springstudent", "springstudent");
+            System.out.println("Connected to the database.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void fetchAdmissionData() {
+        String query = "SELECT u.user_id, u.name, u.email, c.name AS course_name, "
+                + "c.fees, a.amount_paid, (c.fees - a.amount_paid) AS remaining_fees "
+                + "FROM users u "
+                + "JOIN admissions a ON u.user_id = a.user_id "
+                + "JOIN courses c ON a.course_id = c.id";
+
+        try (Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+            tableModel.setRowCount(0); // Clear previous data
+
+            while (rs.next()) {
+                Vector<Object> row = new Vector<>();
+                row.add(rs.getInt("user_id"));
+                row.add(rs.getString("name"));
+                row.add(rs.getString("email"));
+                row.add(rs.getString("course_name"));
+                row.add(rs.getInt("fees")); // Total fees
+                row.add(rs.getInt("amount_paid")); // Amount Paid
+                row.add(rs.getInt("remaining_fees")); // Remaining Fees
+                tableModel.addRow(row);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateFeesPaid(int studentId, int newAmountPaid) {
+        String updateQuery = "UPDATE admissions SET amount_paid = ? WHERE user_id = ?";
+        try (PreparedStatement pst = con.prepareStatement(updateQuery)) {
+            pst.setInt(1, newAmountPaid);
+            pst.setInt(2, studentId);
+            pst.executeUpdate();
+            JOptionPane.showMessageDialog(this, "Fees updated successfully.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error updating fees.");
+        }
+    }
+
+    // Main method to run the JFrame
+    public static void main(String args[]) {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new AdmissionsList().setVisible(true);
+            }
+        });
+    }
+}

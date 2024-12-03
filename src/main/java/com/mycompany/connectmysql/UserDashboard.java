@@ -94,7 +94,7 @@ public class UserDashboard extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel1.setText("User Dashboard");
+        jLabel1.setText("Student Dashboard");
         jLabel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         jButton1.setText("View Profile");
