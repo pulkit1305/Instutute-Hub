@@ -1,4 +1,4 @@
-# Instutute-Hub
+![image](https://github.com/user-attachments/assets/c04aa647-fdc5-4ab8-8401-a72cc00cb9b6)# Instutute-Hub
 <p align="center">
   <img src="https://github.com/user-attachments/assets/0b29832b-e73c-400e-b1ee-72be31f871d2" width="400" />
   <img src="https://github.com/user-attachments/assets/b77a2111-240d-4604-bc99-ee3943513d5a" width="400" />
@@ -20,6 +20,9 @@
 </p>
 <p>
    <img src="https://github.com/user-attachments/assets/75d8abd8-ff55-40f0-93fe-c1a3928b1048" width="600" />
+ 
+   <img src="https://github.com/user-attachments/assets/f431a623-1f84-49af-a958-03807b285690" width="300" />
+
 
 
 </p>
