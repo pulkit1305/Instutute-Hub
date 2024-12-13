@@ -76,7 +76,7 @@ public class RegisterForm extends javax.swing.JFrame {
         });
 
         buttonGroup1.add(user);
-        user.setText("USER");
+        user.setText("STUDENT");
         user.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 userActionPerformed(evt);
@@ -129,7 +129,7 @@ public class RegisterForm extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(42, 42, 42)
                         .addComponent(jButton3)))
-                .addContainerGap(106, Short.MAX_VALUE))
+                .addContainerGap(83, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
